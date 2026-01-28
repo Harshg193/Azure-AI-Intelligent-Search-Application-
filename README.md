@@ -86,26 +86,5 @@ func azure functionapp publish <app-name>
 
 4. Serve the static `app/` directory using Azure Static Web Apps, Azure Blob Static Website, or any static hosting provider.
 
-**Configuration & Environment**
-- Add any settings or secrets to the Function App configuration in Azure (Portal or `az functionapp config appsettings set`).
-- Example local settings can go into `local.settings.json` when using Functions Core Tools (do not commit secrets).
 
-**Testing & Extending**
-- The `skill/function_app.py` is a natural place to plug in AI/ML logic, third-party SDKs, or to forward requests to other services.
-- Add unit tests alongside the function code and run them with `pytest`.
 
-**Contribution**
-- Improvements, bug fixes, or feature requests are welcome. Open an issue or submit a pull request.
-
-**License & Contact**
-- Add your project license file or choose an open-source license.
-- For questions, include a contact or maintainer section here.
-
-------
-*This README is a friendly guide to get you up and running quickly.* If you’d like, I can also:
-
-- Scaffold `local.settings.json` for local debugging
-- Add a GitHub Actions workflow to build and deploy the function
-- Add a tiny test harness for `skill/function_app.py`
-
-Tell me which of the above you want next and I’ll implement it.
