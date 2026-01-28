@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docs | AI Knowledge Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --sidebar-bg: #0f172a;
+            --accent-urgent: #ef4444;
+            --accent-standard: #10b981;
+        }
+
+        * { box-sizing: border-box; transition: all 0.2s ease; }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            display: flex; 
+            height: 100vh; 
+            background-color: var(--bg-body); 
+            color: var(--text-main);
+        }
+
+        /* --- SIDEBAR --- */
+        aside {
+            width: 300px;
+            background: var(--sidebar-bg);
+            color: white;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .logo { font-weight: 700; font-size: 1.5rem; margin-bottom: 40px; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+
+        .upload-zone {
+            background: rgba(255,255,255,0.05);
+            border: 2px dashed rgba(255,255,255,0.2);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .upload-zone:hover { border-color: var(--primary); background: rgba(255,255,255,0.08); }
+
+        input[type="file"] { width: 100%; font-size: 0.8rem; margin-bottom: 15px; }
+
+        .btn-upload {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* --- MAIN CONTENT --- */
+        main { flex-grow: 1; overflow-y: auto; padding: 40px; }
+
+        .header-section { margin-bottom: 40px; }
+        .header-section h1 { font-size: 2rem; margin: 0; }
+        .header-section p { color: var(--text-muted); margin-top: 5px; }
+
+        /* --- SEARCH BOX --- */
+        .search-container {
+            background: var(--bg-card);
+            padding: 8px;
+            border-radius: 16px;
+            display: flex;
+            gap: 10px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .search-container input {
+            flex-grow: 1;
+            border: none;
+            padding: 15px 20px;
+            font-size: 1rem;
+            outline: none;
+            background: transparent;
+        }
+
+        .btn-search {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-search:hover { background: var(--primary-hover); }
+
+        /* --- FILTERS --- */
+        .filter-bar { display: flex; gap: 12px; margin-bottom: 30px; align-items: center; }
+        .filter-label { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
+
+        .chip {
+            padding: 8px 18px;
+            border-radius: 100px;
+            background: #e2e8f0;
+            font-size: 0.85rem;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .chip:hover { background: #cbd5e1; }
+        .chip.active { background: var(--primary); color: white; }
+
+        /* --- RESULTS --- */
+        .results-grid { display: grid; gap: 20px; }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid #e2e8f0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover { transform: translateY(-3px); box-shadow: 0 12px 20px rgba(0,0,0,0.05); }
+
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+
+        .card-title { font-weight: 700; font-size: 1.1rem; color: var(--text-main); }
+
+        .badge {
+            font-size: 0.7rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge.urgent { background: #fee2e2; color: var(--accent-urgent); }
+        .badge.standard { background: #dcfce7; color: var(--accent-standard); }
+
+        .card-body { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; }
+
+        /* Status Messages */
+        #uploadStatus { font-size: 0.8rem; margin-top: 10px; }
+        .loader { text-align: center; padding: 50px; color: var(--text-muted); }
+    </style>
+</head>
+<body>
+
+<aside>
+    <div class="logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+        Docs AI
+    </div>
+    
+    <div class="upload-zone">
+        <h4 style="margin-top:0">Upload Asset</h4>
+        <p style="font-size: 0.75rem; color: #94a3b8;">PDF, Word, or TXT</p>
+        <input type="file" id="fileInput">
+        <button onclick="uploadFile()" class="btn-upload">Push to Cloud</button>
+        <div id="uploadStatus"></div>
+    </div>
+</aside>
+
+<main>
+    <header class="header-section">
+        <h1>Knowledge Discovery</h1>
+        <p>Search across internal intelligence using Azure Neural Index.</p>
+    </header>
+
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Search for documents, policies, or technical specs..." onkeypress="handleEnter(event)">
+        <button onclick="searchDocuments()" class="btn-search">Find Now</button>
+    </div>
+
+    <div class="filter-bar">
+        <span class="filter-label">Quick Filters:</span>
+        <div class="chip" id="chip-all" onclick="setFilter(null)">All Docs</div>
+        <div class="chip" id="chip-Standard" onclick="setFilter('Standard')">Standard</div>
+        <div class="chip" id="chip-High" onclick="setFilter('High-Priority')">High-Priority</div>
+    </div>
+
+    <div id="results" class="results-grid">
+        <div class="loader">Enter a query above to begin searching...</div>
+    </div>
+</main>
+
+<script>
+    // ================= CONFIGURATION =================
+    const SEARCH_SERVICE_NAME = "service-search-ai"; 
+    const INDEX_NAME = "knowledge-index";                      
+    const QUERY_KEY = "";             
+
+    const STORAGE_ACCOUNT_NAME = "datasearch2026"; 
+    const CONTAINER_NAME = "docs";
+    const SAS_TOKEN = ""; 
+    // =================================================
+
+    let currentCategory = null;
+
+    function setFilter(category) {
+        currentCategory = category;
+        
+        // UI Toggle for Chips
+        document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        if(!category) document.getElementById('chip-all').classList.add('active');
+        else if(category === 'Standard') document.getElementById('chip-Standard').classList.add('active');
+        else document.getElementById('chip-High').classList.add('active');
+
+        searchDocuments();
+    }
+
+    function handleEnter(e) {
+        if(e.key === 'Enter') searchDocuments();
+    }
+
+    async function searchDocuments() {
+        const query = document.getElementById('searchInput').value;
+        const resultsDiv = document.getElementById('results');
+        
+        resultsDiv.innerHTML = '<div class="loader"><i class="fas fa-spinner fa-spin"></i> Indexing results...</div>';
+
+        const url = `https://${SEARCH_SERVICE_NAME}.search.windows.net/indexes/${INDEX_NAME}/docs/search?api-version=2023-11-01`;
+
+        const payload = {
+            "search": query || "*", 
+            "select": "metadata_storage_name,content,document_classification", 
+            "top": 12
+        };
+
+        if (currentCategory) {
+            payload["filter"] = `document_classification eq '${currentCategory}'`;
+        }
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'api-key': QUERY_KEY },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) throw new Error("Connection failed");
+            const data = await response.json();
+            displayResults(data.value);
+        } catch (error) {
+            resultsDiv.innerHTML = `<p style="color:var(--accent-urgent)">⚠️ Error: Check your API Keys or Service Name.</p>`;
+        }
+    }
+
+    function displayResults(docs) {
+        const resultsDiv = document.getElementById('results');
+        resultsDiv.innerHTML = '';
+
+        if (!docs || docs.length === 0) {
+            resultsDiv.innerHTML = '<div class="loader">No matches found in the knowledge base.</div>';
+            return;
+        }
+
+        docs.forEach(doc => {
+            const snippet = doc.content ? doc.content.substring(0, 220) : "No content preview available.";
+            const category = doc.document_classification || "General";
+            const name = doc.metadata_storage_name || "Untitled Asset";
+            const isUrgent = category.toLowerCase().includes('high');
+
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <div class="card-header">
+                    <div class="card-title">📄 ${name}</div>
+                    <span class="badge ${isUrgent ? 'urgent' : 'standard'}">${category}</span>
+                </div>
+                <div class="card-body">${snippet}...</div>
+            `;
+            resultsDiv.appendChild(card);
+        });
+    }
+
+    async function uploadFile() {
+        const fileInput = document.getElementById('fileInput');
+        const statusDiv = document.getElementById('uploadStatus');
+        const file = fileInput.files[0];
+        
+        if (!file) { statusDiv.innerHTML = '❌ Select file first'; return; }
+        
+        statusDiv.innerHTML = '⏳ Uploading...';
+        let token = SAS_TOKEN.startsWith('?') ? SAS_TOKEN : '?' + SAS_TOKEN;
+        const blobUrl = `https://${STORAGE_ACCOUNT_NAME}.blob.core.windows.net/${CONTAINER_NAME}/${encodeURIComponent(file.name)}${token}`;
+        
+        try {
+            const res = await fetch(blobUrl, { 
+                method: 'PUT', 
+                headers: { 'x-ms-blob-type': 'BlockBlob', 'Content-Type': file.type }, 
+                body: file 
+            });
+            if (res.ok) {
+                statusDiv.innerHTML = '<b style="color:#10b981">✅ Success!</b>';
+                fileInput.value = "";
+            } else throw new Error();
+        } catch (e) { 
+            statusDiv.innerHTML = '<b style="color:#ef4444">❌ Upload Failed</b>'; 
+        }
+    }
+
+    // Initialize state
+    setFilter(null);
+</script>
+
+</body>
+</html>
